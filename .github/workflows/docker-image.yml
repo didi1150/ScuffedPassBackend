@@ -24,7 +24,7 @@ jobs:
       run: mvn clean package -DskipTests
       
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-spring-app:$(date +%s)
+      run: docker build . --file Dockerfile --tag scuffed-pass
       
     - name: Run Docker image
-      run: docker run -d -p 8080:8080 my-spring-app:$(date +%s)
+      run: docker run -d -p 8080:8080 scuffed-pass
