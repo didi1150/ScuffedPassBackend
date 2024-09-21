@@ -1,4 +1,4 @@
-name: Docker Image CI with PostgreSQL
+name: Docker Image CI and Deploy to Render
 
 on:
   push:
@@ -8,23 +8,11 @@ on:
 
 jobs:
 
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    permissions:
+      contents: read
+      packages: write
 
     steps:
     - uses: actions/checkout@v3
@@ -37,19 +25,24 @@ jobs:
         
     - name: Build with Maven
       run: mvn clean package -DskipTests
+      
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Build and push Docker image
       env:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/${{ secrets.POSTGRES_DB }}
-        SPRING_DATASOURCE_USERNAME: ${{ secrets.POSTGRES_USER }}
-        SPRING_DATASOURCE_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag scuffed-backend
-      
-    - name: Run Docker image
+        REGISTRY: ghcr.io
+        IMAGE_NAME: ${{ github.repository }}
       run: |
-        docker run -d \
-          -p 8080:8080 \
-          -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/${{ secrets.POSTGRES_DB }} \
-          -e SPRING_DATASOURCE_USERNAME=${{ secrets.POSTGRES_USER }} \
-          -e SPRING_DATASOURCE_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
-          scuffed-backend
+        docker build . --file Dockerfile --tag $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+        docker push $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+        
+    - name: Deploy to Render
+      env:
+        deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      run: |
+        curl "$deploy_url"
