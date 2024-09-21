@@ -39,6 +39,7 @@ jobs:
         IMAGE_NAME: ${{ github.repository }}
       run: |
         IMAGE_ID=$(echo $REGISTRY/$IMAGE_NAME | tr '[A-Z]' '[a-z]')
+        cp target/*.jar app.jar
         docker build . --file Dockerfile --tag $IMAGE_ID:${{ github.sha }}
         docker push $IMAGE_ID:${{ github.sha }}
         
