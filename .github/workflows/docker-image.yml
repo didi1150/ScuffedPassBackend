@@ -38,8 +38,9 @@ jobs:
         REGISTRY: ghcr.io
         IMAGE_NAME: ${{ github.repository }}
       run: |
-        docker build . --file Dockerfile --tag $REGISTRY/$IMAGE_NAME:${{ github.sha }}
-        docker push $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+        IMAGE_ID=$(echo $REGISTRY/$IMAGE_NAME | tr '[A-Z]' '[a-z]')
+        docker build . --file Dockerfile --tag $IMAGE_ID:${{ github.sha }}
+        docker push $IMAGE_ID:${{ github.sha }}
         
     - name: Deploy to Render
       env:
