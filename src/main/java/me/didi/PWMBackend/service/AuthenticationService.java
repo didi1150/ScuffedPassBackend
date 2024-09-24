@@ -77,9 +77,6 @@ public class AuthenticationService {
 		return AuthenticationResponse.builder().accessToken(jwtToken).refreshToken(refreshToken).salt(salt).build();
 	}
 
-	public void tokenAuth(String token, HttpServletResponse response) {
-
-	}
 
 	private void saveUserToken(User user, String jwtToken) {
 		var token = Token.builder().user(user).token(jwtToken).expired(false).revoked(false).build();

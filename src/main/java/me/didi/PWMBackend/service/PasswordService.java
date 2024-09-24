@@ -2,23 +2,23 @@ package me.didi.PWMBackend.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import me.didi.PWMBackend.model.table.Password;
 import me.didi.PWMBackend.model.table.User;
 import me.didi.PWMBackend.repository.PasswordRepository;
 import me.didi.PWMBackend.repository.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class PasswordService {
 
 	private PasswordRepository passwordRepository;
 	private UserRepository userRepository;
-
-	public PasswordService(PasswordRepository passwordRepository, UserRepository userRepository) {
-		this.passwordRepository = passwordRepository;
-		this.userRepository = userRepository;
-	}
+	private CookingService cookingService;
+	private final PasswordEncoder passwordEncoder;
 
 	public Password updatePassword(Long userID, Long passwordID, String data, String iv) {
 		Password pw = passwordRepository.findById(passwordID).get();
@@ -40,6 +40,17 @@ public class PasswordService {
 
 	public void deleteByID(Long id) {
 		passwordRepository.deleteById(id);
+	}
+
+	public boolean isMasterPasswordCorrect(String email, String password) {
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+
+		String salt = cookingService.retrieveSalt(user.getEmail());
+		String encodedPassword = user.getPassword();
+		if (!passwordEncoder.matches(salt + password, encodedPassword)) {
+			return false;
+		}
+		return true;
 	}
 
 }
