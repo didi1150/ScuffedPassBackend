@@ -15,9 +15,9 @@ import me.didi.PWMBackend.repository.UserRepository;
 @RequiredArgsConstructor
 public class PasswordService {
 
-	private PasswordRepository passwordRepository;
-	private UserRepository userRepository;
-	private CookingService cookingService;
+	private final PasswordRepository passwordRepository;
+	private final UserRepository userRepository;
+	private final CookingService cookingService;
 	private final PasswordEncoder passwordEncoder;
 
 	public Password updatePassword(Long userID, Long passwordID, String data, String iv) {

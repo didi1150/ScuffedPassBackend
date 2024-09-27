@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import me.didi.PWMBackend.model.MasterPasswordCheckRequest;
 import me.didi.PWMBackend.service.CookingService;
 import me.didi.PWMBackend.service.PasswordService;
 
@@ -34,8 +35,10 @@ public class UserController {
 	}
 
 	@GetMapping("/password-check")
-	public ResponseEntity<Boolean> checkMPassword(@RequestBody String masterPassword, Authentication authentication) {
+	public ResponseEntity<Boolean> checkMPassword(@RequestBody MasterPasswordCheckRequest request,
+			Authentication authentication) {
 		return authentication.getName() == null ? new ResponseEntity<Boolean>(false, null, 403)
-				: ResponseEntity.ok(passwordService.isMasterPasswordCorrect(authentication.getName(), masterPassword));
+				: ResponseEntity.ok(
+						passwordService.isMasterPasswordCorrect(authentication.getName(), request.getMasterPassword()));
 	}
 }
