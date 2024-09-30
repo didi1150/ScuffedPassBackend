@@ -1,4 +1,4 @@
-name: Docker Image CI and Deploy to Render
+name: Docker Image Build
 
 on:
   push:
@@ -32,9 +32,3 @@ jobs:
         IMAGE_ID=$(echo $REGISTRY/$IMAGE_NAME | tr '[A-Z]' '[a-z]')
         docker build . --file Dockerfile --tag $IMAGE_ID:${{ github.sha }}
         docker push $IMAGE_ID:${{ github.sha }}
-        
-    - name: Deploy to Render
-      env:
-        deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-      run: |
-        curl "$deploy_url"
