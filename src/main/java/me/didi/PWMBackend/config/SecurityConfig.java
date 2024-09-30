@@ -2,6 +2,7 @@ package me.didi.PWMBackend.config;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -29,6 +30,9 @@ public class SecurityConfig {
 
 	private final LogoutHandler logoutHandler;
 
+	@Value("${spring.cors.origin}")
+	private String allowedOrigin;
+
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf(csrf -> csrf.disable()).cors(Customizer.withDefaults())
@@ -47,7 +51,7 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		configuration.setAllowedOrigins(Arrays.asList(allowedOrigin));
 		configuration.setAllowedMethods(Arrays.asList("POST", "PUT", "PATCH", "DELETE", "OPTIONS", "GET"));
 		configuration.setAllowedHeaders(
 				Arrays.asList("Origin", "X-Api-Key", "X-Requested-With", "Content-Type", "Accept", "Authorization"));
