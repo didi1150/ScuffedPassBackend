@@ -1,6 +1,7 @@
 package me.didi.PWMBackend.config;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,7 @@ public class SecurityConfig {
 	private final LogoutHandler logoutHandler;
 
 	@Value("${spring.cors.origin}")
-	private String allowedOrigin;
+	private List<String> allowedOrigins;
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,10 +52,7 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		if (allowedOrigin.length() == 1) {
-			configuration.addAllowedOrigin(allowedOrigin);
-		} else
-			configuration.addAllowedOriginPattern(allowedOrigin);
+		configuration.setAllowedOrigins(allowedOrigins);
 		configuration.setAllowedMethods(Arrays.asList("POST", "PUT", "PATCH", "DELETE", "OPTIONS", "GET"));
 		configuration.setAllowedHeaders(
 				Arrays.asList("Origin", "X-Api-Key", "X-Requested-With", "Content-Type", "Accept", "Authorization"));
