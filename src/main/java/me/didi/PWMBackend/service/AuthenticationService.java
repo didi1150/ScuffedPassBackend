@@ -49,7 +49,7 @@ public class AuthenticationService {
 			}
 			Set<Role> roles = new HashSet<Role>();
 			roles.add(defaultRole);
-			String salt = cook.generateSalt(request.getEmail(), request.getPassword());
+			String salt = request.getSalt();
 			var user = User.builder().email(request.getEmail())
 					.password(passwordEncoder.encode(salt + request.getPassword())).roles(roles).salt(salt).build();
 			var savedUser = userService.saveUser(user);
@@ -77,7 +77,6 @@ public class AuthenticationService {
 		return AuthenticationResponse.builder().accessToken(jwtToken).refreshToken(refreshToken).salt(salt).build();
 	}
 
-
 	private void saveUserToken(User user, String jwtToken) {
 		var token = Token.builder().user(user).token(jwtToken).expired(false).revoked(false).build();
 		tokenRepository.save(token);
@@ -98,26 +97,19 @@ public class AuthenticationService {
 		final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 		final String userEmail;
 
-		System.out.println("Header: " + authHeader);
 		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 			response.sendError(401, "No token found in request");
 			throw new IOException("No token found in request");
 		}
 		String refreshToken = authHeader.substring(7);
-		System.out.println("DEBUG:: Refresh Token: " + refreshToken);
 		userEmail = jwtService.extractUsername(refreshToken);
 		if (userEmail != null) {
 			var user = userService.findByEmail(userEmail);
 			if (jwtService.isTokenValid(refreshToken, user)) {
-				System.out.println("DEBUG: Generating token...");
 				String accessToken = jwtService.generateToken(user);
-				System.out.println("DEBUG: Generating refresh token...");
 				String newRefreshToken = jwtService.generateRefreshToken(user);
-				System.out.println("DEBUG: Revoking tokens...");
 				revokeAllUserTokens(user);
-				System.out.println("DEBUG: Saving token...");
 				saveUserToken(user, accessToken);
-				System.out.println("DEBUG: Saving refresh token...");
 				saveUserToken(user, newRefreshToken);
 				String salt = user.getSalt();
 				AuthenticationResponse authResponse = AuthenticationResponse.builder().accessToken(accessToken)

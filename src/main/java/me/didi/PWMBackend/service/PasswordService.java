@@ -18,7 +18,6 @@ public class PasswordService {
 	private final PasswordRepository passwordRepository;
 	private final UserRepository userRepository;
 	private final CookingService cookingService;
-	private final PasswordEncoder passwordEncoder;
 
 	public Password updatePassword(Long userID, Long passwordID, String data, String iv) {
 		Password pw = passwordRepository.findById(passwordID).get();
@@ -45,9 +44,8 @@ public class PasswordService {
 	public boolean isMasterPasswordCorrect(String email, String password) {
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
-		String salt = cookingService.retrieveSalt(user.getEmail());
 		String encodedPassword = user.getPassword();
-		if (!passwordEncoder.matches(salt + password, encodedPassword)) {
+		if (!encodedPassword.equals(password)) {
 			return false;
 		}
 		return true;

@@ -48,7 +48,6 @@ public class SecurityConfig {
 				.build();
 	}
 
-	// ONLY IN DEVELOPMENT, REMEMBER TO CHANGE BEFORE PRODUCTION
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();

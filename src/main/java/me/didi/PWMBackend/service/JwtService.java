@@ -48,7 +48,6 @@ public class JwtService {
 	}
 
 	private String buildToken(Map<String, Object> extraClaims, User user, long expiration) {
-		System.out.println("Token age: " + expiration);
 		return Jwts.builder().setClaims(extraClaims).setSubject(user.getEmail())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + expiration))

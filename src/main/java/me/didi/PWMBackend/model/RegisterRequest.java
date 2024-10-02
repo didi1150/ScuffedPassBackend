@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RegisterRequest {
-	private String email, password;
+	private String email, password, salt;
 }
