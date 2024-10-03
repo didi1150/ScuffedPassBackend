@@ -2,6 +2,7 @@ package me.didi.PWMBackend.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ public class PasswordService {
 
 	private final PasswordRepository passwordRepository;
 	private final UserRepository userRepository;
+	private final CookingService cookingService;
+	private final PasswordEncoder passwordEncoder;
 
 	public Password updatePassword(Long userID, Long passwordID, String data, String iv, String website, String email) {
 		Password pw = passwordRepository.findById(passwordID).get();
@@ -48,7 +51,8 @@ public class PasswordService {
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
 		String encodedPassword = user.getPassword();
-		if (!encodedPassword.equals(password)) {
+		String salt = cookingService.retrieveSalt(email);
+		if (!passwordEncoder.matches(salt + password, encodedPassword)) {
 			return false;
 		}
 		return true;
