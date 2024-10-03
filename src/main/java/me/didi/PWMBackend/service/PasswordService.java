@@ -2,7 +2,6 @@ package me.didi.PWMBackend.service;
 
 import java.util.List;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -17,13 +16,17 @@ public class PasswordService {
 
 	private final PasswordRepository passwordRepository;
 	private final UserRepository userRepository;
-	private final CookingService cookingService;
 
-	public Password updatePassword(Long userID, Long passwordID, String data, String iv) {
+	public Password updatePassword(Long userID, Long passwordID, String data, String iv, String website, String email) {
 		Password pw = passwordRepository.findById(passwordID).get();
-		pw.setIv(iv);
-		pw.setPassword(data);
-
+		if (!iv.isEmpty())
+			pw.setIv(iv);
+		if (!data.isEmpty())
+			pw.setPassword(data);
+		if (!website.isEmpty())
+			pw.setWebsiteURL(website);
+		if (!email.isEmpty())
+			pw.setEmail(email);
 		return passwordRepository.save(pw);
 	}
 

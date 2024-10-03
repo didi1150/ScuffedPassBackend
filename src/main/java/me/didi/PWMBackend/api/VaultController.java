@@ -66,7 +66,8 @@ public class VaultController {
 			return new ResponseEntity<String>(HttpStatusCode.valueOf(403));
 		User user = (User) userService.loadUserByUsername(authentication.getName());
 		Long id = user.getId();
-		passwordService.updatePassword(id, Long.valueOf(request.getId()), request.getPassword(), request.getIv());
+		passwordService.updatePassword(id, Long.valueOf(request.getId()), request.getPassword(), request.getIv(),
+				request.getWebsite(), request.getEmail());
 		return ResponseEntity.ok("Edit successful");
 	}
 
