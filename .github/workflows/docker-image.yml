@@ -31,4 +31,4 @@ jobs:
       run: |
         IMAGE_ID=$(echo $REGISTRY/$IMAGE_NAME | tr '[A-Z]' '[a-z]')
         docker build . --file Dockerfile --tag $IMAGE_ID:${{ github.sha }} -t $IMAGE_ID:latest
-        docker push -a $IMAGE_ID:${{ github.sha }}
+        docker push --all-tags $IMAGE_ID
