@@ -24,7 +24,7 @@ public class UserController {
 	@GetMapping
 	public ResponseEntity<String> getUserName(HttpServletRequest request, Authentication authentication) {
 
-		return authentication.getName() == null ? new ResponseEntity<String>(null, null, 403)
+		return authentication == null ? new ResponseEntity<String>(null, null, 403)
 				: ResponseEntity.ok(authentication.getName());
 	}
 

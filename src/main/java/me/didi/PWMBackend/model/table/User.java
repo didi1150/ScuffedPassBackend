@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,6 +43,11 @@ public class User implements UserDetails {
 	@Column(name = "user_id")
 	private Long id;
 
+	@ColumnDefault("false")
+	@Column(name = "enabled", nullable = false)
+	@Builder.Default
+	private boolean enabled = false;
+
 	@Column(name = "user_email")
 	private String email;
 
@@ -76,11 +82,15 @@ public class User implements UserDetails {
 		return email;
 	}
 
-	
 	public User(Long id, String email, String password, List<SimpleGrantedAuthority> collect) {
 		this.id = id;
 		this.email = email;
 		this.password = password;
 		this.roles = collect.stream().map(r -> new Role(r.getAuthority())).collect(Collectors.toSet());
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return enabled;
 	}
 }

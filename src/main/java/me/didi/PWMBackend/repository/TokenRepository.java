@@ -20,4 +20,9 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
 	@Transactional
 	@Query("DELETE FROM tokens t WHERE t.revoked = true AND t.expired = true")
 	int deleteRevokedAndExpiredTokens();
+
+	@Modifying
+	@Transactional
+	@Query("DELETE FROM tokens t WHERE t.user.id= ?1")
+	int deleteAllTokensOfUser(Long userId);
 }

@@ -2,9 +2,7 @@ package me.didi.PWMBackend.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +17,6 @@ import me.didi.PWMBackend.repository.UserRepository;
 @Service
 public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
-	private final JwtService jwtService;
 
 	public List<User> getAllUsers() {
 		return userRepository.findAll();
@@ -50,13 +47,23 @@ public class UserService implements UserDetailsService {
 			for (int i = 0; i < roles.size(); i++) {
 				rolesNames[i] = roles.get(i).getName();
 			}
-			return new User(user.getId(), user.getEmail(), user.getPassword(), user.getRoles().stream()
-					.map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList()));
+			return User.builder().id(user.getId()).email(user.getEmail()).password(user.getPassword())
+					.roles(user.getRoles()).enabled(user.isEnabled()).build();
 		}
 		return null;
 	}
 
 	public User findByEmail(String email) {
 		return userRepository.findByEmail(email).get();
+	}
+
+	public int deleteDisabledUsers() {
+		return userRepository.deleteNonVerifiedUsers();
+	}
+
+	public void enableUserEmail(String email) {
+		User user = findByEmail(email);
+		user.setEnabled(true);
+		saveUser(user);
 	}
 }
