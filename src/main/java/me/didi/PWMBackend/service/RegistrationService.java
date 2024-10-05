@@ -1,15 +1,18 @@
 package me.didi.PWMBackend.service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -97,12 +100,10 @@ public class RegistrationService {
 	}
 
 	private String buildEmail(String name, String link) {
-		Resource resource = resourceLoader.getResource("classpath:templates/confirmemail-template.html");
-		try {
-			// Load the template file as a string
-			String content = new String(Files.readAllBytes(resource.getFile().toPath()), StandardCharsets.UTF_8);
+		try (InputStream inputStream = getClass().getResourceAsStream("/templates/confirmemail-template.html")) {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+			String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 
-			// Replace placeholders with actual values
 			content = content.replace("{{name}}", name);
 			content = content.replace("{{link}}", link);
 
