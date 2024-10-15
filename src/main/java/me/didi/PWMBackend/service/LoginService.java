@@ -15,7 +15,8 @@ import me.didi.PWMBackend.model.AuthenticationResponse;
 public class LoginService {
 
 	private final UserService userService;
-	private final JwtService jwtService;
+	private final JwtSaveService jwtSaveService;
+	private final JwtUtilService jwtUtilService;
 	private final AuthenticationManager authenticationManager;
 	private final PasswordEncoder passwordEncoder;
 	private final CookingService cook;
@@ -34,10 +35,10 @@ public class LoginService {
 		}
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.getEmail(), salt + request.getPassword()));
-		var jwtToken = jwtService.generateToken(user);
-		var refreshToken = jwtService.generateRefreshToken(user);
-		jwtService.revokeAllUserTokens(user);
-		jwtService.saveUserToken(user, jwtToken);
+		var jwtToken = jwtUtilService.generateToken(user);
+		var refreshToken = jwtUtilService.generateRefreshToken(user);
+		jwtSaveService.revokeAllUserTokens(user);
+		jwtSaveService.saveUserToken(user, jwtToken);
 
 		return AuthenticationResponse.builder().accessToken(jwtToken).refreshToken(refreshToken).salt(salt).build();
 	}

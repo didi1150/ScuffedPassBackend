@@ -1,28 +1,18 @@
 package me.didi.PWMBackend.service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import me.didi.PWMBackend.config.AppConfig;
 import me.didi.PWMBackend.model.RegisterRequest;
 import me.didi.PWMBackend.model.table.ConfirmationToken;
 import me.didi.PWMBackend.model.table.Role;
@@ -33,8 +23,11 @@ import me.didi.PWMBackend.tasks.AccountCleanupTask;
 @RequiredArgsConstructor
 public class RegistrationService {
 
-	@Value("${spring.custom.domain}")
+	@Value("${spring.cors.origin}")
 	private String domainName;
+	
+	@Value("${account.deletion.delay}")
+	private long accountDeletionDelay;
 
 	private final EmailValidator emailValidator;
 	private final UserService userService;
@@ -42,7 +35,6 @@ public class RegistrationService {
 	private final PasswordEncoder passwordEncoder;
 	private final ConfirmationTokenService confirmationTokenService;
 	private final EmailService emailService;
-	private final ResourceLoader resourceLoader;
 	private final AccountCleanupTask accountCleanupTask;
 
 	public void register(RegisterRequest request) {
@@ -54,7 +46,7 @@ public class RegistrationService {
 			userService.findByEmail(request.getEmail());
 			return;
 		} catch (NoSuchElementException e) {
-
+			System.out.println("No user with email: " + request.getEmail() + " found");
 			Role defaultRole = roleService.findById(Long.parseLong("1"));
 			if (defaultRole == null) {
 				roleService.saveRole("user");
@@ -69,13 +61,13 @@ public class RegistrationService {
 			String token = UUID.randomUUID().toString();
 
 			ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(),
-					LocalDateTime.now().plus(AppConfig.ACC_DEL_DELAY, ChronoUnit.MILLIS), user);
+					LocalDateTime.now().plus(accountDeletionDelay, ChronoUnit.MILLIS), user);
 
 			confirmationTokenService.saveConfirmationToken(confirmationToken);
 
 			String link = domainName + "/register/confirm?token=" + token;
-			emailService.send(request.getEmail(), buildEmail(request.getEmail(), link));
-			accountCleanupTask.cleanupRegistrationRubbish();
+			emailService.send(request.getEmail(), link, "confirmemail-template");
+			accountCleanupTask.exterminateInvalidUsers();
 		}
 	}
 
@@ -98,19 +90,4 @@ public class RegistrationService {
 		userService.enableUserEmail(confirmationToken.getUser().getEmail());
 		return "confirmed";
 	}
-
-	private String buildEmail(String name, String link) {
-		try (InputStream inputStream = getClass().getResourceAsStream("/templates/confirmemail-template.html")) {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-			String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-
-			content = content.replace("{{name}}", name);
-			content = content.replace("{{link}}", link);
-
-			return content;
-		} catch (IOException e) {
-			throw new IllegalStateException("Failed to load email template", e);
-		}
-	}
-
 }

@@ -47,6 +47,10 @@ public class PasswordService {
 		passwordRepository.deleteById(id);
 	}
 
+	public void deleteAllByUserId(Long id) {
+		passwordRepository.deleteAllByUserId(id);
+	}
+
 	public boolean isMasterPasswordCorrect(String email, String password) {
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 

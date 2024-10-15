@@ -17,19 +17,22 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import me.didi.PWMBackend.repository.TokenRepository;
-import me.didi.PWMBackend.service.JwtService;
+import me.didi.PWMBackend.service.JwtUtilService;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-	private final JwtService jwtService;
+	private final JwtUtilService jwtService;
 	private final UserDetailsService userDetailsService;
 	private final TokenRepository tokenRepository;
 
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
-		if (request.getServletPath().endsWith("/authenticate") || request.getServletPath().endsWith("/register") || request.getServletPath().endsWith("/refresh-token")) {
+		if (request.getServletPath().endsWith("/authenticate") || request.getServletPath().endsWith("/register")
+				|| request.getServletPath().endsWith("/refresh-token")
+				|| request.getServletPath().endsWith("confirmlock")
+				|| request.getServletPath().endsWith("requestlock")) {
 			filterChain.doFilter(request, response);
 			return;
 		}

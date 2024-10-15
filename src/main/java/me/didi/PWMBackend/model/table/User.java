@@ -1,5 +1,6 @@
 package me.didi.PWMBackend.model.table;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,6 +51,11 @@ public class User implements UserDetails {
 	@Builder.Default
 	private boolean enabled = false;
 
+	@ColumnDefault("false")
+	@Column(name = "locked", nullable = false)
+	@Builder.Default
+	private boolean locked = false;
+
 	@Column(name = "user_email")
 	private String email;
 
@@ -66,6 +74,11 @@ public class User implements UserDetails {
 	@ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
 	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles;
+
+	@Column(name = "created_at", nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	@Builder.Default
+	private LocalDateTime timestamp = LocalDateTime.now();
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -92,5 +105,10 @@ public class User implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return !locked;
 	}
 }
