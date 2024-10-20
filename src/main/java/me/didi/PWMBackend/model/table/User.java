@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
@@ -62,8 +61,23 @@ public class User implements UserDetails {
 	@Column(name = "user_pw")
 	private String password;
 
-	@Column(name = "user_salt")
+	@Column(name = "user_salt", length = 10000)
 	private String salt;
+	@Column(name = "public_key", length = 10000)
+	private String publicKey;
+	@Column(name = "private_key_master", length = 10000)
+	private String privateKeyMaster;
+	@Column(name = "private_key_recovery", length = 10000)
+	private String privateKeyRecovery;
+	@Column(name = "encryption_key", length = 10000)
+	private String encryptionKey;
+	@Column(name = "iv")
+	private String iv;
+
+	@Column(name = "first_login")
+	@ColumnDefault("true")
+	@Builder.Default
+	private boolean isFirstLogin = true;
 
 	@OneToMany(mappedBy = "user")
 	private List<Token> tokens;
@@ -93,13 +107,6 @@ public class User implements UserDetails {
 	@Override
 	public String getUsername() {
 		return email;
-	}
-
-	public User(Long id, String email, String password, List<SimpleGrantedAuthority> collect) {
-		this.id = id;
-		this.email = email;
-		this.password = password;
-		this.roles = collect.stream().map(r -> new Role(r.getAuthority())).collect(Collectors.toSet());
 	}
 
 	@Override

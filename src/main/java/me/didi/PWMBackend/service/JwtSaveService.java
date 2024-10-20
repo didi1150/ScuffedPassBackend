@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import me.didi.PWMBackend.model.AuthenticationResponse;
+import me.didi.PWMBackend.model.authentication.LoginResponse;
 import me.didi.PWMBackend.model.table.Token;
 import me.didi.PWMBackend.model.table.User;
 import me.didi.PWMBackend.repository.TokenRepository;
@@ -42,7 +42,7 @@ public class JwtSaveService {
 				saveUserToken(user, accessToken);
 				saveUserToken(user, newRefreshToken);
 				String salt = user.getSalt();
-				AuthenticationResponse authResponse = AuthenticationResponse.builder().accessToken(accessToken)
+				LoginResponse authResponse = LoginResponse.builder().accessToken(accessToken)
 						.refreshToken(newRefreshToken).salt(salt).build();
 				new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
 			}

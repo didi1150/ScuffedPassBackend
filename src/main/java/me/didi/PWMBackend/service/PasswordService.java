@@ -56,7 +56,10 @@ public class PasswordService {
 
 		String encodedPassword = user.getPassword();
 		String salt = cookingService.retrieveSalt(email);
+		System.out.println(encodedPassword);
+
 		if (!passwordEncoder.matches(salt + password, encodedPassword)) {
+			System.out.println("Password doesn't match");
 			return false;
 		}
 		return true;

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import me.didi.PWMBackend.model.AddPasswordRequest;
-import me.didi.PWMBackend.model.EditPasswordRequest;
+import me.didi.PWMBackend.model.authorized.AddPasswordRequest;
+import me.didi.PWMBackend.model.authorized.EditPasswordRequest;
 import me.didi.PWMBackend.model.table.Password;
 import me.didi.PWMBackend.model.table.User;
 import me.didi.PWMBackend.service.PasswordService;

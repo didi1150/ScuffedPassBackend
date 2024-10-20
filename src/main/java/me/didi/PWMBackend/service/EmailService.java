@@ -29,13 +29,13 @@ public class EmailService {
 	private final JavaMailSender mailSender;
 
 	@Async
-	public void send(String to, String link, String template) {
+	public void send(String to, String link, String template, String subject) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 			helper.setText(buildEmail(to, link, template), true);
 			helper.setTo(to);
-			helper.setSubject("Confirm your email");
+			helper.setSubject(subject);
 			helper.setFrom(fromEmail);
 			mailSender.send(mimeMessage);
 			log.info("Email sent");

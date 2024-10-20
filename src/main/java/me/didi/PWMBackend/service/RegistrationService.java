@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import me.didi.PWMBackend.model.RegisterRequest;
+import me.didi.PWMBackend.model.authentication.RegisterRequest;
 import me.didi.PWMBackend.model.table.ConfirmationToken;
 import me.didi.PWMBackend.model.table.Role;
 import me.didi.PWMBackend.model.table.User;
@@ -25,7 +25,7 @@ public class RegistrationService {
 
 	@Value("${spring.cors.origin}")
 	private String domainName;
-	
+
 	@Value("${account.deletion.delay}")
 	private long accountDeletionDelay;
 
@@ -66,7 +66,7 @@ public class RegistrationService {
 			confirmationTokenService.saveConfirmationToken(confirmationToken);
 
 			String link = domainName + "/register/confirm?token=" + token;
-			emailService.send(request.getEmail(), link, "confirmemail-template");
+			emailService.send(request.getEmail(), link, "confirmemail-template", "Confirm your email");
 			accountCleanupTask.exterminateInvalidUsers();
 		}
 	}

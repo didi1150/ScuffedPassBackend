@@ -7,8 +7,9 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import me.didi.PWMBackend.model.AuthenticationRequest;
-import me.didi.PWMBackend.model.AuthenticationResponse;
+import me.didi.PWMBackend.model.authentication.LoginRequest;
+import me.didi.PWMBackend.model.authentication.LoginResponse;
+import me.didi.PWMBackend.model.table.User;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +23,13 @@ public class LoginService {
 	private final CookingService cook;
 	private final EmailValidator emailValidator;
 
-	public AuthenticationResponse login(AuthenticationRequest request, HttpServletResponse response) {
+	public LoginResponse login(LoginRequest request, HttpServletResponse response) {
 		if (!emailValidator.test(request.getEmail())) {
 			throw new IllegalStateException("Email is not valid");
 		}
 
 		String salt = cook.retrieveSalt(request.getEmail());
-		var user = userService.findByEmail(request.getEmail());
+		User user = userService.findByEmail(request.getEmail());
 		String encodedPassword = user.getPassword();
 		if (!passwordEncoder.matches(salt + request.getPassword(), encodedPassword)) {
 			return null;
@@ -40,6 +41,7 @@ public class LoginService {
 		jwtSaveService.revokeAllUserTokens(user);
 		jwtSaveService.saveUserToken(user, jwtToken);
 
-		return AuthenticationResponse.builder().accessToken(jwtToken).refreshToken(refreshToken).salt(salt).build();
+		return LoginResponse.builder().accessToken(jwtToken).refreshToken(refreshToken).salt(salt)
+				.firstLogin(user.isFirstLogin()).build();
 	}
 }

@@ -1,4 +1,4 @@
-package me.didi.PWMBackend.model;
+package me.didi.PWMBackend.model.authorized;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

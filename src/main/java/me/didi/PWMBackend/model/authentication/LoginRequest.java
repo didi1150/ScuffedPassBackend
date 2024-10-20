@@ -1,11 +1,11 @@
-package me.didi.PWMBackend.model;
+package me.didi.PWMBackend.model.authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AuthenticationRequest {
+public class LoginRequest {
 
 	private String email, password;
 

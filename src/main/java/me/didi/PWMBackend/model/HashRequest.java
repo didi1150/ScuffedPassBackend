@@ -2,9 +2,11 @@ package me.didi.PWMBackend.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class RegisterRequest {
-	private String email, password, salt;
+@NoArgsConstructor
+public class HashRequest {
+	private String hash;
 }
