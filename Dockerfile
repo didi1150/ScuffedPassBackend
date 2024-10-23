@@ -6,7 +6,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Run stage
-FROM arm64v8/eclipse-temurin:17-jre-focal
+FROM arm64v8/eclipse-temurin:17-alpine
 VOLUME /tmp
 COPY --from=build /app/target/*.jar app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]
