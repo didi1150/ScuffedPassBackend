@@ -20,6 +20,7 @@ import me.didi.PWMBackend.model.ResetMasterPasswordRequest;
 import me.didi.PWMBackend.model.authentication.LoginRequest;
 import me.didi.PWMBackend.model.authentication.LoginResponse;
 import me.didi.PWMBackend.model.authentication.RegisterRequest;
+import me.didi.PWMBackend.service.CookingService;
 import me.didi.PWMBackend.service.JwtSaveService;
 import me.didi.PWMBackend.service.LockService;
 import me.didi.PWMBackend.service.LoginService;
@@ -36,10 +37,16 @@ public class AuthenticationController {
 	private final JwtSaveService jwtService;
 	private final RecoveryService recoveryService;
 	private final LockService lockService;
+	private final CookingService cookingService;
 
 	@PostMapping("/register")
 	public void register(@RequestBody RegisterRequest request) {
 		registrationService.register(request);
+	}
+
+	@GetMapping("/get-salt")
+	public ResponseEntity<String> getSalt(@RequestParam String email) {
+		return ResponseEntity.ok(cookingService.retrieveSalt(email));
 	}
 
 	@GetMapping(path = "confirm")
@@ -75,11 +82,6 @@ public class AuthenticationController {
 	@PostMapping("/authenticate")
 	public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginRequest request, HttpServletResponse response) {
 		return ResponseEntity.ok(loginService.login(request, response));
-	}
-
-	@PostMapping("/token-auth")
-	public ResponseEntity<?> tokenAuth(HttpServletResponse response) {
-		return ResponseEntity.ok("Success");
 	}
 
 	@PostMapping("/refresh-token")

@@ -35,6 +35,7 @@ public class RecoveryService {
 	private final EmailValidator emailValidator;
 	private final EmailService emailService;
 	private final TaskScheduler taskScheduler;
+	private final JwtSaveService jwtSaveService;
 
 	public void resetMasterPassword(ResetMasterPasswordRequest resetMasterPasswordRequest) {
 		ConfirmationToken confirmationToken = confirmationTokenService.getToken(resetMasterPasswordRequest.getToken())
@@ -59,6 +60,7 @@ public class RecoveryService {
 		user.setSalt(resetMasterPasswordRequest.getSalt());
 		user.setPassword(passwordEncoder
 				.encode(resetMasterPasswordRequest.getSalt() + resetMasterPasswordRequest.getPassword()));
+		jwtSaveService.revokeAllUserTokens(user);
 		userService.saveUser(user);
 	}
 

@@ -28,7 +28,6 @@ public class AdminService {
 	}
 
 	public void deleteUser(Long userId) {
-		System.out.println("Delete request: " + userId);
 		confirmationTokenService.deleteExpiredToken(userId);
 		tokenRepository.deleteAllTokensOfUser(userId);
 		passwordService.deleteAllByUserId(userId);

@@ -29,13 +29,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
-		if (request.getServletPath().endsWith("/authenticate") || request.getServletPath().endsWith("/register")
-				|| request.getServletPath().endsWith("/refresh-token")
-				|| request.getServletPath().endsWith("confirmlock")
-				|| request.getServletPath().endsWith("requestlock")) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+//		if (request.getServletPath().endsWith("/authenticate") || request.getServletPath().endsWith("/register")
+//				|| request.getServletPath().endsWith("/refresh-token")
+//				|| request.getServletPath().endsWith("confirmlock")
+//				|| request.getServletPath().endsWith("requestlock")) {
+//			filterChain.doFilter(request, response);
+//			return;
+//		}
 		final String authHeader = request.getHeader("Authorization");
 		final String jwt;
 		final String userEmail;

@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CryptoResponse {
-	private String encryptionKey, privateKeyMaster, iv;
+	private String encryptionKey, privateKeyMaster, iv, salt;
 }

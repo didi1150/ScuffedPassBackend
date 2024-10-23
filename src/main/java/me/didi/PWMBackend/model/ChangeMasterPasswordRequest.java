@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ChangeMasterPasswordRequest {
-	private String currentMasterPassword, newMasterPassword;
+	private String privateKeyMaster, oldPassword, newPassword, salt;
 }

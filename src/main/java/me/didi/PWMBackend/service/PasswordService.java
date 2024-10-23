@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import me.didi.PWMBackend.model.ChangeMasterPasswordRequest;
 import me.didi.PWMBackend.model.table.Password;
 import me.didi.PWMBackend.model.table.User;
 import me.didi.PWMBackend.repository.PasswordRepository;
@@ -19,6 +20,7 @@ public class PasswordService {
 	private final UserRepository userRepository;
 	private final CookingService cookingService;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtSaveService jwtSaveService;
 
 	public Password updatePassword(Long userID, Long passwordID, String data, String iv, String website, String email) {
 		Password pw = passwordRepository.findById(passwordID).get();
@@ -56,13 +58,24 @@ public class PasswordService {
 
 		String encodedPassword = user.getPassword();
 		String salt = cookingService.retrieveSalt(email);
-		System.out.println(encodedPassword);
 
 		if (!passwordEncoder.matches(salt + password, encodedPassword)) {
-			System.out.println("Password doesn't match");
 			return false;
 		}
 		return true;
+	}
+
+	public void updateMasterPassword(String email, ChangeMasterPasswordRequest changeMasterPasswordRequest) {
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+		if (isMasterPasswordCorrect(email, changeMasterPasswordRequest.getOldPassword())) {
+			user.setPrivateKeyMaster(changeMasterPasswordRequest.getPrivateKeyMaster());
+			user.setPassword(passwordEncoder
+					.encode(changeMasterPasswordRequest.getSalt() + changeMasterPasswordRequest.getNewPassword()));
+			user.setSalt(changeMasterPasswordRequest.getSalt());
+			userRepository.save(user);
+			jwtSaveService.revokeAllUserTokens(user);
+		} else
+			return;
 	}
 
 }

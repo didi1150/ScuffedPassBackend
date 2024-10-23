@@ -38,8 +38,9 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf(csrf -> csrf.disable()).cors(Customizer.withDefaults())
 				.authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
-						.requestMatchers("/api/admin/**").hasAnyAuthority("admin")
-						.requestMatchers("/api/auth/account/logout").permitAll().anyRequest().authenticated())
+						.requestMatchers("/api/auth/account/user/**").authenticated().requestMatchers("/api/admin/**")
+						.hasAnyAuthority("admin").requestMatchers("/api/auth/account/logout").permitAll().anyRequest()
+						.authenticated())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 				.logout(logout -> logout.logoutUrl("/api/auth/account/logout").addLogoutHandler(logoutHandler)

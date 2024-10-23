@@ -46,7 +46,6 @@ public class RegistrationService {
 			userService.findByEmail(request.getEmail());
 			return;
 		} catch (NoSuchElementException e) {
-			System.out.println("No user with email: " + request.getEmail() + " found");
 			Role defaultRole = roleService.findById(Long.parseLong("1"));
 			if (defaultRole == null) {
 				roleService.saveRole("user");
