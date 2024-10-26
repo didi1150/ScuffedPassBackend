@@ -29,7 +29,6 @@ public class UserController {
 
 	@GetMapping
 	public ResponseEntity<String> getUserName(HttpServletRequest request, Authentication authentication) {
-
 		return authentication == null ? new ResponseEntity<String>(null, null, 403)
 				: ResponseEntity.ok(authentication.getName());
 	}
@@ -51,7 +50,8 @@ public class UserController {
 	}
 
 	@PostMapping("/crypto")
-	public void addKeysToAccount(@RequestBody CryptoRequest cryptoRequest, Authentication authentication, HttpServletRequest request) {
+	public void addKeysToAccount(@RequestBody CryptoRequest cryptoRequest, Authentication authentication,
+			HttpServletRequest request) {
 		userService.addCryptoDetails(cryptoRequest, authentication.getName());
 	}
 
