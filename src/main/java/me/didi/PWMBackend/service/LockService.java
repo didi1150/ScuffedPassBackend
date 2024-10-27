@@ -3,6 +3,7 @@ package me.didi.PWMBackend.service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +20,7 @@ import me.didi.PWMBackend.model.table.User;
 public class LockService {
 
 	@Value("${spring.cors.origin}")
-	private String domainName;
+	private List<String> allowedOrigins;
 
 	@Value("${account.deletion.delay}")
 	private long accountDeletionDelay;
@@ -65,7 +66,7 @@ public class LockService {
 
 		confirmationTokenService.saveConfirmationToken(confirmationToken);
 
-		String link = domainName + "/confirmlock?token=" + token + "&email=" + email;
+		String link = allowedOrigins.get(0) + "/confirmlock?token=" + token + "&email=" + email;
 		emailService.send(email, link, "confirmlock-template", "Lock your Account");
 		taskScheduler.schedule(new Runnable() {
 			@Override

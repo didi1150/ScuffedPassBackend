@@ -3,6 +3,7 @@ package me.didi.PWMBackend.service;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
@@ -24,7 +25,7 @@ import me.didi.PWMBackend.tasks.AccountCleanupTask;
 public class RegistrationService {
 
 	@Value("${spring.cors.origin}")
-	private String domainName;
+	private List<String> allowedOrigins;
 
 	@Value("${account.deletion.delay}")
 	private long accountDeletionDelay;
@@ -64,7 +65,7 @@ public class RegistrationService {
 
 			confirmationTokenService.saveConfirmationToken(confirmationToken);
 
-			String link = domainName + "/register/confirm?token=" + token;
+			String link = allowedOrigins.get(0) + "/register/confirm?token=" + token;
 			emailService.send(request.getEmail(), link, "confirmemail-template", "Confirm your email");
 			accountCleanupTask.exterminateInvalidUsers();
 		}
