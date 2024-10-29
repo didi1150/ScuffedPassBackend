@@ -38,7 +38,6 @@ public class LoginService {
 				new UsernamePasswordAuthenticationToken(request.getEmail(), salt + request.getPassword()));
 		var jwtToken = jwtUtilService.generateToken(user);
 		var refreshToken = jwtUtilService.generateRefreshToken(user);
-		jwtSaveService.revokeAllUserTokens(user);
 		jwtSaveService.saveUserToken(user, jwtToken);
 
 		return LoginResponse.builder().accessToken(jwtToken).refreshToken(refreshToken).salt(salt)
