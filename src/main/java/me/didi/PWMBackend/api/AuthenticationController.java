@@ -2,6 +2,7 @@ package me.didi.PWMBackend.api;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -81,7 +82,11 @@ public class AuthenticationController {
 
 	@PostMapping("/authenticate")
 	public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginRequest request, HttpServletResponse response) {
-		return ResponseEntity.ok(loginService.login(request, response));
+		try {
+			return ResponseEntity.ok(loginService.login(request, response));
+		} catch (Exception e) {
+			return new ResponseEntity<LoginResponse>(HttpStatusCode.valueOf(403));
+		}
 	}
 
 	@PostMapping("/refresh-token")

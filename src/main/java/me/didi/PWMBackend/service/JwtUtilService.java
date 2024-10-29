@@ -16,6 +16,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
 import me.didi.PWMBackend.model.table.User;
 
 @Service
@@ -72,7 +73,14 @@ public class JwtUtilService {
 	}
 
 	private Claims extractAllClaims(String token) {
-		return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
+		try {
+
+			return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e.getClass().getName());
+			return null;
+		}
 	}
 
 	private Key getSignInKey() {

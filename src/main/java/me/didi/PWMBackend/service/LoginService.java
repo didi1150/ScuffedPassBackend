@@ -23,7 +23,7 @@ public class LoginService {
 	private final CookingService cook;
 	private final EmailValidator emailValidator;
 
-	public LoginResponse login(LoginRequest request, HttpServletResponse response) {
+	public LoginResponse login(LoginRequest request, HttpServletResponse response) throws Exception {
 		if (!emailValidator.test(request.getEmail())) {
 			throw new IllegalStateException("Email is not valid");
 		}
@@ -32,7 +32,7 @@ public class LoginService {
 		User user = userService.findByEmail(request.getEmail());
 		String encodedPassword = user.getPassword();
 		if (!passwordEncoder.matches(salt + request.getPassword(), encodedPassword)) {
-			return null;
+			throw new Exception("Passwords don't match");
 		}
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.getEmail(), salt + request.getPassword()));
