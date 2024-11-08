@@ -24,11 +24,11 @@ public class PasswordService {
 
 	public Password updatePassword(Long userID, Long passwordID, String data, String website, String email) {
 		Password pw = passwordRepository.findById(passwordID).get();
-		if (!data.isEmpty())
+		if (!data.isBlank())
 			pw.setPassword(data);
-		if (!website.isEmpty())
+		if (!website.isBlank())
 			pw.setWebsiteURL(website);
-		if (!email.isEmpty())
+		if (!email.isBlank())
 			pw.setEmail(email);
 		return passwordRepository.save(pw);
 	}
