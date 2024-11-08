@@ -22,10 +22,8 @@ public class PasswordService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtSaveService jwtSaveService;
 
-	public Password updatePassword(Long userID, Long passwordID, String data, String iv, String website, String email) {
+	public Password updatePassword(Long userID, Long passwordID, String data, String website, String email) {
 		Password pw = passwordRepository.findById(passwordID).get();
-		if (!iv.isEmpty())
-			pw.setIv(iv);
 		if (!data.isEmpty())
 			pw.setPassword(data);
 		if (!website.isEmpty())
@@ -43,6 +41,11 @@ public class PasswordService {
 		User user = userRepository.findById(userID).orElseThrow(() -> new RuntimeException("User not found"));
 		password.setUser(user);
 		return passwordRepository.save(password);
+	}
+
+	public String getIv(Long id) {
+		Password pw = passwordRepository.findById(id).orElseThrow();
+		return pw.getIv();
 	}
 
 	public void deleteByID(Long id) {

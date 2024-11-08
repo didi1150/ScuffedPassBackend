@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,11 @@ public class VaultController {
 		Long id = user.getId();
 
 		return new ResponseEntity<List<Password>>(passwordService.findAllByUserID(id), HttpStatusCode.valueOf(200));
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<String> getIv(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(passwordService.getIv(id));
 	}
 
 	@PostMapping
@@ -66,8 +72,8 @@ public class VaultController {
 			return new ResponseEntity<String>(HttpStatusCode.valueOf(403));
 		User user = (User) userService.loadUserByUsername(authentication.getName());
 		Long id = user.getId();
-		passwordService.updatePassword(id, Long.valueOf(request.getId()), request.getPassword(), request.getIv(),
-				request.getWebsite(), request.getEmail());
+		passwordService.updatePassword(id, Long.valueOf(request.getId()), request.getPassword(), request.getWebsite(),
+				request.getEmail());
 		return ResponseEntity.ok("Edit successful");
 	}
 

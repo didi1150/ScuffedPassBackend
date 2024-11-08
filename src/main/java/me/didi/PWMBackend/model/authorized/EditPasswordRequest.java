@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class EditPasswordRequest {
 
-	private String password, iv, id, website, email;
+	private String password, id, website, email;
 
 }
